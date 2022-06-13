@@ -8,12 +8,12 @@ COPY ["Bookvault.Book.API.csproj", "Bookvault.Book.API/"]
 RUN dotnet restore "Bookvault.Book.API/Bookvault.Book.API.csproj"
 COPY . .
 WORKDIR "/src/Bookvault.Book.API"
-RUN dotnet build "Bookvault.Book.API.csproj" -c Release -o /app/build
+RUN dotnet build "Bookvault.Book.API.csproj" -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "Bookvault.Book.API.csproj" -c Release -o /app/publish
+RUN dotnet publish "Bookvault.Book.API.csproj" -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "Bookvault.Book.API.dll"]
