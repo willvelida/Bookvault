@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookvault.Book.API", "Bookvault.Book.API\Bookvault.Book.API.csproj", "{B97E9E59-9980-44CF-A25D-AFD8029A58E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookvault.Book.API", "Bookvault.Book.API\Bookvault.Book.API.csproj", "{3CB62CE8-130E-43FC-9EA4-944036439B50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B97E9E59-9980-44CF-A25D-AFD8029A58E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B97E9E59-9980-44CF-A25D-AFD8029A58E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B97E9E59-9980-44CF-A25D-AFD8029A58E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B97E9E59-9980-44CF-A25D-AFD8029A58E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CB62CE8-130E-43FC-9EA4-944036439B50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CB62CE8-130E-43FC-9EA4-944036439B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CB62CE8-130E-43FC-9EA4-944036439B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CB62CE8-130E-43FC-9EA4-944036439B50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CD16B3C3-82BB-49FC-AABC-FB4D032BF8EC}
+		SolutionGuid = {18C36732-8415-4F45-9909-656291D03740}
 	EndGlobalSection
 EndGlobal
