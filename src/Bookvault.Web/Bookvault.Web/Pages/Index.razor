@@ -1,0 +1,55 @@
+﻿@page "/"
+@using Bookvault.Web.Data
+@using Bookvault.Web.Data.Interfaces;
+@using Microsoft.Extensions.Caching.Memory
+@inject IBookvaultBackendClient _bookVaultBackendClient
+@inject IMemoryCache _memoryCache
+
+<PageTitle>Index</PageTitle>
+
+<h1>My Bookvault</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th>Inventory</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in _books)
+        {
+            <tr>
+                <td>@book.Title</td>
+                <td>@book.Quantity</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code
+{
+    List<Book> _books = new List<Book>();
+    bool _shouldRender = false;
+    protected override bool ShouldRender() => _shouldRender;
+    const string cacheKey = "BOOKS";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Book[] tmp;
+        if (!_memoryCache.TryGetValue(cacheKey, out tmp))
+        {
+            var books = await _bookVaultBackendClient.GetBooks();
+            foreach (var book in books)
+            {
+                book.Quantity = await _bookVaultBackendClient.GetInventory(book.BookId);
+            }
+            _books = books.ToList();
+            _memoryCache.Set<Book[]>(cacheKey, _books.ToArray());
+            tmp = _books.ToArray();
+        }
+        _books = tmp.ToList();
+
+        _shouldRender = true;
+    }
+}
