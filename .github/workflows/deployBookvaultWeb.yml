@@ -45,8 +45,9 @@ jobs:
           docker build . -t ${{ steps.getacrcreds.outputs.loginServer }}/bookvaultweb:${{ github.sha }}
           docker push ${{ steps.getacrcreds.outputs.loginServer }}/bookvaultweb:${{ github.sha }}
 
-  deploy-api-image:
+  deploy-web-image:
     runs-on: ubuntu-latest
+    needs: build-container-image
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
