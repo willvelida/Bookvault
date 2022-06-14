@@ -233,11 +233,11 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
             }
             {
               name: 'BooksApi'
-              value: bookApi.properties.configuration.ingress.fqdn
+              value: 'https://${bookApi.properties.configuration.ingress.fqdn}'
             }
             {
               name: 'InventoryApi'
-              value: inventoryApi.properties.configuration.ingress.fqdn
+              value: 'https://${inventoryApi.properties.configuration.ingress.fqdn}'
             }
           ]
         }

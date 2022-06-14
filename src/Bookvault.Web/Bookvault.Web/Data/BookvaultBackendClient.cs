@@ -20,7 +20,7 @@ namespace Bookvault.Web.Data
 
         public async Task<int> GetInventory(string productId)
         {
-            var client = _httpClientFactory.CreateClient("Products");
+            var client = _httpClientFactory.CreateClient("Inventory");
             return await RestService.For<IBookvaultBackendClient>(client).GetInventory(productId);
         }
     }
