@@ -12,6 +12,8 @@ var apimInstanceName = '${applicationName}apim'
 var booksApiName = 'booksapi'
 var inventoryApiName = 'inventoryapi'
 var bookvaultWebName = 'bookvaultweb'
+var bookEndpointName = 'Book'
+var inventoryEndpointName = 'Inventory'
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' = {
   name: containerRegistryName
@@ -72,6 +74,9 @@ resource apim 'Microsoft.ApiManagement/service@2021-12-01-preview' = {
     publisherEmail: 'willvelida@microsoft.com'
     publisherName: 'Will Velida'
   }
+  identity: {
+    type: 'SystemAssigned'
+  }
 }
 
 resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
@@ -128,6 +133,9 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
       }
     }
   }
+  identity: {
+    type: 'SystemAssigned'
+  }
 }
 
 resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
@@ -183,6 +191,9 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
         maxReplicas: 3
       }
     }
+  }
+  identity: {
+    type: 'SystemAssigned'
   }
 }
 
@@ -247,5 +258,62 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
         maxReplicas: 3
       }
     }
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
+resource bookApiEndpoint 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
+  name: bookEndpointName
+  parent: apim
+  properties: {
+    path: 'Book'
+    apiType: 'http'
+    displayName: bookEndpointName
+    format: 'swagger-json'
+    type: 'http'
+    serviceUrl: 'https://${bookApi.properties.configuration.ingress.fqdn}'
+    protocols: [
+     'http'
+     'https' 
+    ]
+  }
+}
+
+resource getBooksOperations 'Microsoft.ApiManagement/service/apis/operations@2021-12-01-preview' = {
+  name: 'getBooks'
+  parent: bookApiEndpoint
+  properties: {
+    displayName: 'GET Books'
+    method: 'GET'
+    urlTemplate: '/books' 
+  }
+}
+
+resource inventoryApiEndpoint 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
+  name: inventoryEndpointName
+  parent: apim
+  properties: {
+    path: 'Inventory'
+    apiType: 'http'
+    displayName: inventoryEndpointName
+    format: 'swagger-json'
+    type: 'http'
+    serviceUrl: 'https://${inventoryApi.properties.configuration.ingress.fqdn}'
+    protocols: [
+      'http'
+      'https'
+    ]
+  }
+}
+
+resource getInventoryOperations 'Microsoft.ApiManagement/service/apis/operations@2021-12-01-preview' = {
+  name: 'getInventory'
+  parent: inventoryApiEndpoint
+  properties: {
+    displayName: 'GET Inventory'
+    method: 'GET'
+    urlTemplate: '/inventory/{productId}' 
   }
 }
