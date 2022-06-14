@@ -314,6 +314,12 @@ resource getInventoryOperations 'Microsoft.ApiManagement/service/apis/operations
   properties: {
     displayName: 'GET Inventory'
     method: 'GET'
-    urlTemplate: '/inventory/{productId}' 
+    urlTemplate: '/inventory/{productId}'
+    templateParameters: [
+      {
+        name: 'productId'
+        type: 'string'
+      }
+    ] 
   }
 }
