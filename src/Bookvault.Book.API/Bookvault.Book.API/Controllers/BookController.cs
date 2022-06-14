@@ -14,7 +14,7 @@ namespace Bookvault.Book.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetBooks")]
+        [HttpGet("/books",Name = "GetBooks")]
         public ActionResult<List<Book>> Get()
         {
             var books = new Faker<Book>()
