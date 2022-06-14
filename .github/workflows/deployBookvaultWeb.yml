@@ -5,7 +5,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./src/Bookvault.Web/Bookvault.Web
+    working-directory: ./src/Bookvault.Web
 
 jobs:
   build-container-image:
