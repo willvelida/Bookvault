@@ -9,7 +9,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["Bookvault.Inventory.API.csproj", "Bookvault.Inventory.API/"]
 RUN dotnet restore "Bookvault.Inventory.API/Bookvault.Inventory.API.csproj"
-COPY . .
+COPY . ./
 WORKDIR "/src/Bookvault.Inventory.API"
 RUN dotnet build "Bookvault.Inventory.API.csproj" -c Release -o /app/build
 
