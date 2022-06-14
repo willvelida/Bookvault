@@ -89,7 +89,7 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       registries: [
         {
-          server: containerRegistry.name
+          server: '${containerRegistry.name}.azurecr.io'
           username: containerRegistry.listCredentials().username
           passwordSecretRef: 'container-registry-password'
         }
@@ -145,7 +145,7 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       registries: [
         {
-          server: containerRegistry.name
+          server: '${containerRegistry.name}.azurecr.io'
           username: containerRegistry.listCredentials().username
           passwordSecretRef: 'container-registry-password'
         }
@@ -201,7 +201,7 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       registries: [
         {
-          server: containerRegistry.name
+          server: '${containerRegistry.name}.azurecr.io'
           username: containerRegistry.listCredentials().username
           passwordSecretRef: 'container-registry-password'
         }
@@ -230,6 +230,14 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: appInsights.properties.ConnectionString
+            }
+            {
+              name: 'BooksApi'
+              value: bookApi.properties.configuration.ingress.fqdn
+            }
+            {
+              name: 'InventoryApi'
+              value: inventoryApi.properties.configuration.ingress.fqdn
             }
           ]
         }
