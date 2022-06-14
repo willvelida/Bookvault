@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Bookvault.Book.API.csproj", "Bookvault.Book.API/"]
+COPY ["Bookvault.Book.API/Bookvault.Book.API.csproj", "Bookvault.Book.API/"]
 RUN dotnet restore "Bookvault.Book.API/Bookvault.Book.API.csproj"
 COPY . ./
 WORKDIR "/src/Bookvault.Book.API"
