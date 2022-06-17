@@ -35,6 +35,8 @@ jobs:
       - name: Get existing images
         id: getimages
         run: |
+          echo "Installing containerapp extension"
+          az extension add -n containerapp --yes
           inventoryApiImage=$(az containerapp show --name inventoryapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
           bookApiImage=$(az containerapp show --name booksapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
           bookvaultImage=$(az containerapp show --name bookvaultweb --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
@@ -64,6 +66,8 @@ jobs:
       - name: Get existing images
         id: getimages
         run: |
+          echo "Installing containerapp extension"
+          az extension add -n containerapp --yes
           inventoryApiImage=$(az containerapp show --name inventoryapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
           bookApiImage=$(az containerapp show --name booksapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
           bookvaultImage=$(az containerapp show --name bookvaultweb --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
@@ -92,6 +96,8 @@ jobs:
       - name: Get existing images
         id: getimages
         run: |
+          echo "Installing containerapp extension"
+          az extension add -n containerapp --yes
           inventoryApiImage=$(az containerapp show --name inventoryapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
           bookApiImage=$(az containerapp show --name booksapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
           bookvaultImage=$(az containerapp show --name bookvaultweb --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
