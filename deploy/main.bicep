@@ -4,6 +4,15 @@ param location string = resourceGroup().location
 @description('Name of our application.')
 param applicationName string = uniqueString(resourceGroup().id)
 
+@description('The latest image that the inventory api is using')
+param inventoryApiImage string
+
+@description('The latest image that the book api container is using')
+param bookApiImage string
+
+@description('The latest image that the web container app is using')
+param bookVaultImage string
+
 var containerRegistryName = '${applicationName}acr'
 var logAnalyticsWorkspaceName = '${applicationName}law'
 var appInsightsName = '${applicationName}ai'
@@ -109,7 +118,7 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
     template: {
       containers: [
         {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: bookApiImage
           name: booksApiName
           env: [
             {
@@ -168,7 +177,7 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
     template: {
       containers: [
         {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: inventoryApiImage
           name: inventoryApiName
           env: [
             {
@@ -227,7 +236,7 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
     template: {
       containers: [
         {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: bookVaultImage
           name: bookvaultWebName
           env: [
             {

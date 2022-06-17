@@ -31,7 +31,17 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+
+      - name: Get existing images
+        id: getimages
+        run: |
+          inventoryApiImage=$(az containerapp show --name inventoryapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          bookApiImage=$(az containerapp show --name booksapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          bookvaultImage=$(az containerapp show --name bookvaultweb --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          echo "::set-output name=inventoryApiImage::$inventoryApiImage"
+          echo "::set-output name=bookApiImage::$bookApiImage"
+          echo "::set-output name=bookvaultImage::$bookvaultImage"
+
       - name: Run preflight validation
         uses: azure/arm-deploy@v1
         with:
@@ -39,6 +49,7 @@ jobs:
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: ./deploy/main.bicep
           deploymentMode: Validate
+          parameters: inventoryApiImage=${{ steps.getimages.outputs.inventoryApiImage }} bookApiImage=${{ steps.getimages.outputs.bookApiImage }} bookVaultImage=${{ steps.getimages.outputs.bookvaultImage }}
 
   preview:
     needs: [lint, validate]
@@ -49,11 +60,22 @@ jobs:
         name: Sign into Azure
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get existing images
+        id: getimages
+        run: |
+          inventoryApiImage=$(az containerapp show --name inventoryapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          bookApiImage=$(az containerapp show --name booksapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          bookvaultImage=$(az containerapp show --name bookvaultweb --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          echo "::set-output name=inventoryApiImage::$inventoryApiImage"
+          echo "::set-output name=bookApiImage::$bookApiImage"
+          echo "::set-output name=bookvaultImage::$bookvaultImage"
+      
       - uses: Azure/cli@v1
         name: Run what-if
         with:
           inlineScript: |
-            az deployment group what-if --resource-group ${{ secrets.AZURE_RG }} --template-file ./deploy/main.bicep
+            az deployment group what-if --resource-group ${{ secrets.AZURE_RG }} --template-file ./deploy/main.bicep --parameters inventoryApiImage=${{ steps.getimages.outputs.inventoryApiImage }} bookApiImage=${{ steps.getimages.outputs.bookApiImage }} bookVaultImage=${{ steps.getimages.outputs.bookvaultImage }}
   
   deploy:
     runs-on: ubuntu-latest
@@ -67,6 +89,16 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Get existing images
+        id: getimages
+        run: |
+          inventoryApiImage=$(az containerapp show --name inventoryapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          bookApiImage=$(az containerapp show --name booksapi --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          bookvaultImage=$(az containerapp show --name bookvaultweb --resource-group ${{ secrets.AZURE_RG }} --query "properties.template.containers[0].image" -o tsv)
+          echo "::set-output name=inventoryApiImage::$inventoryApiImage"
+          echo "::set-output name=bookApiImage::$bookApiImage"
+          echo "::set-output name=bookvaultImage::$bookvaultImage"
+
       - name: Deploy Bicep Template
         uses: azure/arm-deploy@v1
         with:
@@ -74,3 +106,4 @@ jobs:
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: ./deploy/main.bicep
           deploymentMode: Incremental
+          parameters: inventoryApiImage=${{ steps.getimages.outputs.inventoryApiImage }} bookApiImage=${{ steps.getimages.outputs.bookApiImage }} bookVaultImage=${{ steps.getimages.outputs.bookvaultImage }}
