@@ -32,6 +32,9 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-pr
   identity: {
     type: 'SystemAssigned'
   }
+  properties: {
+    adminUserEnabled: true
+  }
 }
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
