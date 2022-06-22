@@ -23,6 +23,7 @@ var inventoryApiName = 'inventoryapi'
 var bookvaultWebName = 'bookvaultweb'
 var bookEndpointName = 'Book'
 var inventoryEndpointName = 'Inventory'
+var targetPort = 80
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' = {
   name: containerRegistryName
@@ -110,7 +111,7 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       ingress: {
         external: false
-        targetPort: 80
+        targetPort: targetPort
         transport: 'http'
         allowInsecure: true 
       }
@@ -138,7 +139,17 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 10
+        rules: [
+          {
+            name: 'http-rule'
+            http: {
+              metadata: {
+                concurrentRequests: '100'
+              }
+            }
+          }
+        ]
       }
     }
   }
@@ -169,7 +180,7 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       ingress: {
         external: false
-        targetPort: 80
+        targetPort: targetPort
         transport: 'http'
         allowInsecure: true
       }
@@ -197,7 +208,17 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 10
+        rules: [
+          {
+            name: 'http-rule'
+            http: {
+              metadata: {
+                concurrentRequests: '100'
+              }
+            }
+          }
+        ]
       }
     }
   }
@@ -228,7 +249,7 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
       ]
       ingress: {
         external: true
-        targetPort: 80
+        targetPort: targetPort
         transport: 'http'
         allowInsecure: false
       }
@@ -260,11 +281,43 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
               value: 'https://${inventoryApi.properties.configuration.ingress.fqdn}'
             }
           ]
+          probes: [
+            {
+              type: 'Readiness'
+              httpGet: {
+                port: targetPort
+                path: '/probes/ready'
+              }
+              timeoutSeconds: 30
+              successThreshold: 1
+              failureThreshold: 10
+              periodSeconds: 10
+            }
+            {
+              type: 'Startup'
+              httpGet: {
+                port: targetPort
+                path: '/probes/healthz' 
+              }
+              failureThreshold: 6
+              periodSeconds: 10
+            }        
+          ]
         }
       ]
       scale: {
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 10
+        rules: [
+          {
+            name: 'http-rule'
+            http: {
+              metadata: {
+                concurrentRequests: '100'
+              }
+            }
+          }
+        ]
       }
     }
   }
