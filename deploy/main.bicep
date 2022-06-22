@@ -308,3 +308,30 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
     type: 'SystemAssigned'
   }
 }
+
+module bookApiPullRole 'modules/acrPullRoleAssignment.bicep' = {
+  name: 'bookApiPullRole'
+  params: {
+    appId: bookApi.id
+    containerRegistryName: containerRegistry.name
+    principalId: bookApi.identity.principalId
+  }
+}
+
+module inventoryApiPullRole 'modules/acrPullRoleAssignment.bicep' = {
+  name: 'inventoryApiPullRole'
+  params: {
+    appId: inventoryApi.id
+    containerRegistryName: containerRegistry.name 
+    principalId: inventoryApi.identity.principalId
+  }
+}
+
+module bookvaultWebPullRole 'modules/acrPullRoleAssignment.bicep' = {
+  name: 'bookvaultWebPullRole'
+  params: {
+    appId: bookvaultWeb.id
+    containerRegistryName: containerRegistry.name 
+    principalId: bookvaultWeb.identity.principalId
+  }
+}
