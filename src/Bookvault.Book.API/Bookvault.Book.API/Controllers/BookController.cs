@@ -17,13 +17,25 @@ namespace Bookvault.Book.API.Controllers
         [HttpGet("/books",Name = "GetBooks")]
         public ActionResult<List<Book>> Get()
         {
-            var books = new Faker<Book>()
-                .StrictMode(true)
-                .RuleFor(b => b.BookId, (fake) => Guid.NewGuid().ToString())
-                .RuleFor(b => b.Title, (fake) => fake.Commerce.ProductName())
-                .Generate(10);
+            try
+            {
+                _logger.LogInformation("Retrieving all books");
 
-            return new OkObjectResult(books);
+                var books = new Faker<Book>()
+                    .StrictMode(true)
+                    .RuleFor(b => b.BookId, (fake) => Guid.NewGuid().ToString())
+                    .RuleFor(b => b.Title, (fake) => fake.Commerce.ProductName())
+                    .Generate(10);
+
+                _logger.LogInformation("Books retrieved");
+
+                return new OkObjectResult(books);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception thrown in {nameof(Get)}: {ex.Message}");
+                throw;
+            }      
         }
     }
 }
