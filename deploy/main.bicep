@@ -22,8 +22,6 @@ var booksApiName = 'booksapi'
 var inventoryApiName = 'inventoryapi'
 var bookvaultWebName = 'bookvaultweb'
 var targetPort = 80
-// This is the ACR Pull Role Definition Id: https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#acrpull
-var acrPullRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' = {
   name: containerRegistryName
@@ -89,16 +87,6 @@ resource apim 'Microsoft.ApiManagement/service@2021-12-01-preview' = {
   }
 }
 
-resource containerAppAcrPullAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
-  name: guid(containerRegistry.id, bookvaultWeb.id, acrPullRoleDefinitionId)
-  scope: containerRegistry
-  properties: {
-    principalId: bookvaultWeb.identity.principalId
-    roleDefinitionId: acrPullRoleDefinitionId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
   name: booksApiName
   location: location
@@ -107,16 +95,11 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: {
       activeRevisionsMode: 'multiple'
       secrets: [
-        {
-          name: 'container-registry-password'
-          value: containerRegistry.listCredentials().passwords[0].value
-        }
       ]
       registries: [
         {
           server: '${containerRegistry.name}.azurecr.io'
-          username: containerRegistry.listCredentials().username
-          passwordSecretRef: 'container-registry-password'
+          identity: 'system'
         }
       ]
       ingress: {
@@ -176,16 +159,11 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: {
       activeRevisionsMode: 'multiple'
       secrets: [
-        {
-          name: 'container-registry-password'
-          value: containerRegistry.listCredentials().passwords[0].value
-        }
       ]
       registries: [
         {
           server: '${containerRegistry.name}.azurecr.io'
-          username: containerRegistry.listCredentials().username
-          passwordSecretRef: 'container-registry-password'
+          identity: 'system'
         }
       ]
       ingress: {
