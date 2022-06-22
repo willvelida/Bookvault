@@ -21,9 +21,9 @@ var apimInstanceName = '${applicationName}apim'
 var booksApiName = 'booksapi'
 var inventoryApiName = 'inventoryapi'
 var bookvaultWebName = 'bookvaultweb'
-var bookEndpointName = 'Book'
-var inventoryEndpointName = 'Inventory'
 var targetPort = 80
+// This is the ACR Pull Role Definition Id: https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#acrpull
+var acrPullRoleDefinitionId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' = {
   name: containerRegistryName
@@ -86,6 +86,16 @@ resource apim 'Microsoft.ApiManagement/service@2021-12-01-preview' = {
   }
   identity: {
     type: 'SystemAssigned'
+  }
+}
+
+resource containerAppAcrPullAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+  name: guid(containerRegistry.id, bookvaultWeb.id, acrPullRoleDefinitionId)
+  scope: containerRegistry
+  properties: {
+    principalId: bookvaultWeb.identity.principalId
+    roleDefinitionId: acrPullRoleDefinitionId
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -235,16 +245,11 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: {
       activeRevisionsMode: 'multiple'
       secrets: [
-        {
-          name: 'container-registry-password'
-          value: containerRegistry.listCredentials().passwords[0].value
-        }
       ]
       registries: [
         {
           server: '${containerRegistry.name}.azurecr.io'
-          username: containerRegistry.listCredentials().username
-          passwordSecretRef: 'container-registry-password'
+          identity: 'system'
         }
       ]
       ingress: {
@@ -323,65 +328,5 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
   }
   identity: {
     type: 'SystemAssigned'
-  }
-}
-
-resource bookApiEndpoint 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
-  name: bookEndpointName
-  parent: apim
-  properties: {
-    path: 'Book'
-    apiType: 'http'
-    displayName: bookEndpointName
-    format: 'swagger-json'
-    type: 'http'
-    serviceUrl: 'https://${bookApi.properties.configuration.ingress.fqdn}'
-    protocols: [
-     'http'
-     'https' 
-    ]
-  }
-}
-
-resource getBooksOperations 'Microsoft.ApiManagement/service/apis/operations@2021-12-01-preview' = {
-  name: 'getBooks'
-  parent: bookApiEndpoint
-  properties: {
-    displayName: 'GET Books'
-    method: 'GET'
-    urlTemplate: '/books' 
-  }
-}
-
-resource inventoryApiEndpoint 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
-  name: inventoryEndpointName
-  parent: apim
-  properties: {
-    path: 'Inventory'
-    apiType: 'http'
-    displayName: inventoryEndpointName
-    format: 'swagger-json'
-    type: 'http'
-    serviceUrl: 'https://${inventoryApi.properties.configuration.ingress.fqdn}'
-    protocols: [
-      'http'
-      'https'
-    ]
-  }
-}
-
-resource getInventoryOperations 'Microsoft.ApiManagement/service/apis/operations@2021-12-01-preview' = {
-  name: 'getInventory'
-  parent: inventoryApiEndpoint
-  properties: {
-    displayName: 'GET Inventory'
-    method: 'GET'
-    urlTemplate: '/inventory/{productId}'
-    templateParameters: [
-      {
-        name: 'productId'
-        type: 'string'
-      }
-    ] 
   }
 }
