@@ -42,9 +42,10 @@ namespace Bookvault.Web.Data
             return await RestService.For<IBookvaultBackendClient>(client).PostBook(book);
         }
 
-        public Task UpdateBookById(long id, Book book)
+        public async Task UpdateBookById(long id, Book book)
         {
-            throw new NotImplementedException();
+            var client = _httpClientFactory.CreateClient("Books");
+            await RestService.For<IBookvaultBackendClient>(client).UpdateBookById(id, book);
         }
     }
 }
