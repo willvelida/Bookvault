@@ -19,7 +19,7 @@ namespace Bookvault.Inventory.API.Controllers
         [HttpGet("/inventory/{productId}",Name = "GetInventoryCount")]
         public ActionResult<int> Get(int productId)
         {
-            var memCacheKey = $"bookid-{productId}-inventory";
+            var memCacheKey = $"{productId}-inventory";
             int inventoryValue = -404;
 
             if (!_memoryCache.TryGetValue(memCacheKey, out inventoryValue))
