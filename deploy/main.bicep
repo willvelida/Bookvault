@@ -17,6 +17,9 @@ var containerRegistryName = '${applicationName}acr'
 var logAnalyticsWorkspaceName = '${applicationName}law'
 var appInsightsName = '${applicationName}ai'
 var containerAppEnvironmentName = '${applicationName}env'
+var cosmosDbAccountName = '${applicationName}db'
+var databaseName = 'BookVaultDB'
+var bookContainerName = 'Books'
 var apimInstanceName = '${applicationName}apim'
 var booksApiName = 'booksapi'
 var inventoryApiName = 'inventoryapi'
@@ -84,6 +87,63 @@ resource apim 'Microsoft.ApiManagement/service@2021-12-01-preview' = {
   }
   identity: {
     type: 'SystemAssigned'
+  }
+}
+
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2022-02-15-preview' = {
+  name: cosmosDbAccountName
+  properties: {
+    databaseAccountOfferType: 'Standard'
+    locations: [
+      {
+        locationName: location
+        failoverPriority: 0
+        isZoneRedundant: true
+      }
+    ]
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+    }
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
+resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-02-15-preview' = {
+  name: databaseName
+  parent: cosmosDbAccount
+  properties: {
+    resource: {
+      id: databaseName
+    }
+  }
+}
+
+resource bookContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2022-02-15-preview' = {
+  name: bookContainerName
+  parent: database
+  properties: {
+    options: {
+      throughput: 400
+    }
+    resource: {
+      id: bookContainerName
+      partitionKey: {
+        paths: [
+          '/id'
+        ]
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+      }
+    }
   }
 }
 
@@ -333,5 +393,13 @@ module bookvaultWebPullRole 'modules/acrPullRoleAssignment.bicep' = {
     appId: bookvaultWeb.id
     containerRegistryName: containerRegistry.name 
     principalId: bookvaultWeb.identity.principalId
+  }
+}
+
+module bookapiSqlRole 'modules/sqlRoleAssignment.bicep' = {
+  name: 'bookapiSqlRole'
+  params: {
+    cosmosDbAccountName: cosmosDbAccount.name 
+    principalId: bookApi.identity.principalId
   }
 }
