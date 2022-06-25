@@ -23,7 +23,7 @@
         @foreach (var book in _books)
         {
             <tr>
-                <td>@book.Title</td>
+                <td><a href="books/@book.BookId">@book.Title</a></td>
                 <td>@book.Author</td>
                 <td>@book.Category</td>
                 <td>$@book.Price.ToString("0.00")</td>

@@ -33,7 +33,7 @@ namespace Bookvault.Book.API.Controllers
                     .RuleFor(b => b.Category, (fake) => fake.PickRandom<string>(new List<string> { "Romance", "Fiction", "Sci-Fi", "Non-Fiction", "Biography", "Education", "Thriller" }))
                     .RuleFor(b => b.Author, (fake) => fake.PickRandom<string>(new List<string> { "Joe Bloggs", "Jane Smith", "Sky Blue", "Lisa Marcs", "Will Johns", "Don Small", "Arthur Morgan", "Michael Townley", "Ashley Smith" }))
                     .RuleFor(b => b.Price, (fake) => fake.Random.Decimal(9.99m, 17.99m))
-                    .Generate(10);
+                    .Generate(1);
 
                 return new OkObjectResult(books);
             }
