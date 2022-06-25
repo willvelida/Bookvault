@@ -92,6 +92,7 @@ resource apim 'Microsoft.ApiManagement/service@2021-12-01-preview' = {
 
 resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2022-02-15-preview' = {
   name: cosmosDbAccountName
+  location: location
   properties: {
     databaseAccountOfferType: 'Standard'
     locations: [
