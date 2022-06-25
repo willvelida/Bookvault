@@ -24,7 +24,7 @@ namespace Bookvault.Inventory.API.Controllers
 
             if (!_memoryCache.TryGetValue(memCacheKey, out inventoryValue))
             {
-                inventoryValue = new Random().Next(1, 100);
+                inventoryValue = new Random().Next(1, 15);
                 _memoryCache.Set(memCacheKey, inventoryValue);
             }
 
