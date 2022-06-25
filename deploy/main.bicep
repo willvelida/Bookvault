@@ -11,7 +11,7 @@ param inventoryApiImage string
 param bookApiImage string
 
 @description('The latest image that the web container app is using')
-param bookVaultImage string
+param bookVaultImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
 var containerRegistryName = '${applicationName}acr'
 var logAnalyticsWorkspaceName = '${applicationName}law'
