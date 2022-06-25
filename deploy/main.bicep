@@ -223,16 +223,11 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: {
       activeRevisionsMode: 'multiple'
       secrets: [
-        {
-          name: 'container-registry-password'
-          value: containerRegistry.listCredentials().passwords[0].value
-        }
       ]
       registries: [
         {
           server: '${containerRegistry.name}.azurecr.io'
-          username: containerRegistry.listCredentials().username
-          passwordSecretRef: 'container-registry-password'
+          identity: 'system'
         }
       ]
       ingress: {
@@ -329,5 +324,14 @@ module inventoryApiPullRole 'modules/acrPullRoleAssignment.bicep' = {
     appId: inventoryApi.id
     containerRegistryName: containerRegistry.name 
     principalId: inventoryApi.identity.principalId
+  }
+}
+
+module bookvaultWebPullRole 'modules/acrPullRoleAssignment.bicep' = {
+  name: 'bookvaultWebPullRole'
+  params: {
+    appId: bookvaultWeb.id
+    containerRegistryName: containerRegistry.name 
+    principalId: bookvaultWeb.identity.principalId
   }
 }
