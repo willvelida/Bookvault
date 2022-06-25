@@ -28,12 +28,16 @@ namespace Bookvault.Book.API.Controllers
                 var bookId = 0;
                 var books = new Faker<Book>()
                     .StrictMode(true)
-                    .RuleFor(b => b.Id, (fake) => bookId++)
                     .RuleFor(b => b.Title, (fake) => fake.Commerce.ProductName())
                     .RuleFor(b => b.Category, (fake) => fake.PickRandom<string>(new List<string> { "Romance", "Fiction", "Sci-Fi", "Non-Fiction", "Biography", "Education", "Thriller" }))
                     .RuleFor(b => b.Author, (fake) => fake.PickRandom<string>(new List<string> { "Joe Bloggs", "Jane Smith", "Sky Blue", "Lisa Marcs", "Will Johns", "Don Small", "Arthur Morgan", "Michael Townley", "Ashley Smith" }))
                     .RuleFor(b => b.Price, (fake) => fake.Random.Decimal(9.99m, 17.99m))
                     .Generate(10);
+
+                foreach (var book in books)
+                {
+                    book.Id = bookId++;
+                }
 
                 return new OkObjectResult(books);
             }
