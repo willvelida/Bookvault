@@ -13,7 +13,10 @@
     <thead>
         <tr>
             <th scope="col">Title</th>
-            <th>Inventory</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Quantity</th>
         </tr>
     </thead>
     <tbody>
@@ -21,6 +24,9 @@
         {
             <tr>
                 <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td>@book.Category</td>
+                <td>$@book.Price</td>
                 <td>@book.Quantity</td>
             </tr>
         }

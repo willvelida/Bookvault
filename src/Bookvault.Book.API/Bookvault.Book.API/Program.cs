@@ -1,3 +1,7 @@
+using Bookvault.Book.API;
+using Bookvault.Book.API.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
+builder.Services.AddDbContext<BookContext>(opt => opt.UseInMemoryDatabase("Books"));
 
 var app = builder.Build();
 
