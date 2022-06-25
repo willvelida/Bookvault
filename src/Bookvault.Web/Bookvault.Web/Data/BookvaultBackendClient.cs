@@ -30,7 +30,7 @@ namespace Bookvault.Web.Data
             return await RestService.For<IBookvaultBackendClient>(client).GetBooks();
         }
 
-        public async Task<int> GetInventory(string productId)
+        public async Task<int> GetInventory(int productId)
         {
             var client = _httpClientFactory.CreateClient("Inventory");
             return await RestService.For<IBookvaultBackendClient>(client).GetInventory(productId);

@@ -20,6 +20,6 @@ namespace Bookvault.Web.Data.Interfaces
         Task DeleteBookById(long id);
 
         [Get("/inventory/{productId}")]
-        Task<int> GetInventory(string productId);
+        Task<int> GetInventory(int productId);
     }
 }
