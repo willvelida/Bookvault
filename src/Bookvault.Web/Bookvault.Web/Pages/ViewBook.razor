@@ -1,4 +1,4 @@
-﻿@page "/book/{Id:int}"
+﻿@page "/book/{Id}"
 @using Bookvault.Web.Data
 @using Bookvault.Web.Data.Interfaces
 @inject IBookvaultBackendClient _bookVaultBackendClient
@@ -14,7 +14,7 @@
 
 @code {
     [Parameter]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     Book book = new Book();
     bool _shouldRender = false;
