@@ -23,7 +23,7 @@
         @foreach (var book in _books)
         {
             <tr>
-                <td><a href="books/@book.BookId">@book.Title</a></td>
+                <td><a href="books/@book.Id">@book.Title</a></td>
                 <td>@book.Author</td>
                 <td>@book.Category</td>
                 <td>$@book.Price.ToString("0.00")</td>
@@ -48,7 +48,7 @@
             var books = await _bookVaultBackendClient.GetBooks();
             foreach (var book in books)
             {
-                book.Quantity = await _bookVaultBackendClient.GetInventory(book.BookId);
+                book.Quantity = await _bookVaultBackendClient.GetInventory(book.Id);
             }
             _books = books.ToList();
             _memoryCache.Set<Book[]>(cacheKey, _books.ToArray());
