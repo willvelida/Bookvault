@@ -25,15 +25,14 @@ namespace Bookvault.Book.API.Controllers
             {
                 _logger.LogInformation("Retrieving all books");
 
-                var bookId = 0;
                 var books = new Faker<Book>()
                     .StrictMode(true)
-                    .RuleFor(b => b.Id, (fake) => bookId++)
+                    .RuleFor(b => b.Id, (fake) => Guid.NewGuid().ToString())
                     .RuleFor(b => b.Title, (fake) => fake.Commerce.ProductName())
                     .RuleFor(b => b.Category, (fake) => fake.PickRandom<string>(new List<string> { "Romance", "Fiction", "Sci-Fi", "Non-Fiction", "Biography", "Education", "Thriller" }))
                     .RuleFor(b => b.Author, (fake) => fake.PickRandom<string>(new List<string> { "Joe Bloggs", "Jane Smith", "Sky Blue", "Lisa Marcs", "Will Johns", "Don Small", "Arthur Morgan", "Michael Townley", "Ashley Smith" }))
                     .RuleFor(b => b.Price, (fake) => fake.Random.Decimal(9.99m, 17.99m))
-                    .Generate(1);
+                    .Generate(10);
 
                 return new OkObjectResult(books);
             }
@@ -44,8 +43,8 @@ namespace Bookvault.Book.API.Controllers
             }      
         }
 
-        [HttpGet("/books/{id:int}", Name = "GetBookById")]
-        public async Task<ActionResult<Book>> GetBookById(long id)
+        [HttpGet("/books/{id}", Name = "GetBookById")]
+        public async Task<ActionResult<Book>> GetBookById(string id)
         {
             try
             {
@@ -82,8 +81,8 @@ namespace Bookvault.Book.API.Controllers
             }
         }
 
-        [HttpPut("/books/{id:int}", Name = "UpdateBook")]
-        public async Task<IActionResult> UpdateBookById(long id, Book book)
+        [HttpPut("/books/{id}", Name = "UpdateBook")]
+        public async Task<IActionResult> UpdateBookById(string id, Book book)
         {
             try
             {
@@ -111,8 +110,8 @@ namespace Bookvault.Book.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("/books/{id:int}", Name = "DeleteBook")]
-        public async Task<IActionResult> DeleteBookById(long id)
+        [HttpDelete("/books/{id}", Name = "DeleteBook")]
+        public async Task<IActionResult> DeleteBookById(string id)
         {
             try
             {

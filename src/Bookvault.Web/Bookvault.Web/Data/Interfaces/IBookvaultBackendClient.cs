@@ -8,18 +8,18 @@ namespace Bookvault.Web.Data.Interfaces
         Task<List<Book>> GetBooks();
 
         [Get("/books/{id}")]
-        Task<Book> GetBookById(long id);
+        Task<Book> GetBookById(string id);
 
         [Post("/books")]
         Task<Book> PostBook(Book book);
 
         [Put("/books/{id}")]
-        Task UpdateBookById(long id, Book book);
+        Task UpdateBookById(string id, Book book);
 
         [Delete("/books/{id}")]
-        Task DeleteBookById(long id);
+        Task DeleteBookById(string id);
 
         [Get("/inventory/{productId}")]
-        Task<int> GetInventory(int productId);
+        Task<int> GetInventory(string productId);
     }
 }

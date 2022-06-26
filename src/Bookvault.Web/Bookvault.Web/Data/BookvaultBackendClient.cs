@@ -12,13 +12,13 @@ namespace Bookvault.Web.Data
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task DeleteBookById(long id)
+        public async Task DeleteBookById(string id)
         {
             var client = _httpClientFactory.CreateClient("Books");
             await RestService.For<IBookvaultBackendClient>(client).DeleteBookById(id);
         }
 
-        public async Task<Book> GetBookById(long id)
+        public async Task<Book> GetBookById(string id)
         {
             var client = _httpClientFactory.CreateClient("Books");
             return await RestService.For<IBookvaultBackendClient>(client).GetBookById(id);
@@ -30,7 +30,7 @@ namespace Bookvault.Web.Data
             return await RestService.For<IBookvaultBackendClient>(client).GetBooks();
         }
 
-        public async Task<int> GetInventory(int productId)
+        public async Task<int> GetInventory(string productId)
         {
             var client = _httpClientFactory.CreateClient("Inventory");
             return await RestService.For<IBookvaultBackendClient>(client).GetInventory(productId);
@@ -42,7 +42,7 @@ namespace Bookvault.Web.Data
             return await RestService.For<IBookvaultBackendClient>(client).PostBook(book);
         }
 
-        public async Task UpdateBookById(long id, Book book)
+        public async Task UpdateBookById(string id, Book book)
         {
             var client = _httpClientFactory.CreateClient("Books");
             await RestService.For<IBookvaultBackendClient>(client).UpdateBookById(id, book);
