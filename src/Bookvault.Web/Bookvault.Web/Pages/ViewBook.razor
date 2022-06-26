@@ -16,12 +16,14 @@
     [Parameter]
     public string Id { get; set; }
 
-    Book book = new Book();
+    Book book;
     bool _shouldRender = false;
     protected override bool ShouldRender() => _shouldRender;
 
     protected override async Task OnInitializedAsync()
     {
         book = await _bookVaultBackendClient.GetBookById(Id);
+
+        _shouldRender = true;
     }
 }
