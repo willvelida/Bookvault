@@ -188,6 +188,10 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: appInsights.properties.ConnectionString
             }
+            {
+              name: 'COSMOS_DB_ENDPOINT'
+              value: cosmosDbAccount.properties.documentEndpoint
+            }
           ]
         }
       ]
