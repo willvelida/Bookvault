@@ -193,6 +193,22 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
               value: cosmosDbAccount.properties.documentEndpoint
             }
           ]
+          probes: [
+            {
+              type: 'Liveness'
+              httpGet: {
+                path: '/healthz'
+                port: targetPort
+                httpHeaders: [
+                  {
+                    name: 'Custom-Header'
+                    value: 'liveness probe'
+                  }]
+              }
+              initialDelaySeconds: 7
+              periodSeconds: 3
+            }
+          ]
         }
       ]
       scale: {
