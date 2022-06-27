@@ -361,19 +361,6 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
               value: 'https://${inventoryApi.properties.configuration.ingress.fqdn}'
             }
           ]
-          probes: [
-            {
-              type: 'Readiness'
-              httpGet: {
-                port: targetPort
-                path: '/probes/ready'
-              }
-              timeoutSeconds: 30
-              successThreshold: 1
-              failureThreshold: 10
-              periodSeconds: 10
-            }      
-          ]
         }
       ]
       scale: {
