@@ -257,6 +257,22 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
               value: appInsights.properties.ConnectionString
             }
           ]
+          probes: [
+            {
+              type: 'Liveness'
+              httpGet: {
+                path: '/healthz'
+                port: targetPort
+                httpHeaders: [
+                  {
+                    name: 'Custom-Header'
+                    value: 'liveness probe'
+                  }]
+              }
+              initialDelaySeconds: 7
+              periodSeconds: 3
+            }
+          ]
         }
       ]
       scale: {
@@ -340,16 +356,7 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
               successThreshold: 1
               failureThreshold: 10
               periodSeconds: 10
-            }
-            {
-              type: 'Startup'
-              httpGet: {
-                port: targetPort
-                path: '/probes/healthz' 
-              }
-              failureThreshold: 6
-              periodSeconds: 10
-            }        
+            }      
           ]
         }
       ]
