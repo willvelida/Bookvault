@@ -14,15 +14,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
-builder.Services.AddSingleton(sp =>
-{
-    CosmosClientOptions cosmosClientOptions = new CosmosClientOptions
-    {
-        MaxRetryAttemptsOnRateLimitedRequests = 3,
-        MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60)
-    };
-    return new CosmosClient(builder.Configuration["COSMOS_DB_ENDPOINT"], new DefaultAzureCredential(), cosmosClientOptions);
-});
 
 var app = builder.Build();
 

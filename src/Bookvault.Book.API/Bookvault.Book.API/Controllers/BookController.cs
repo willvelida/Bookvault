@@ -10,12 +10,10 @@ namespace Bookvault.Book.API.Controllers
     public class BookController : Controller
     {
         private readonly ILogger<BookController> _logger;
-        private readonly BookContext _context;
 
-        public BookController(ILogger<BookController> logger, BookContext context)
+        public BookController(ILogger<BookController> logger)
         {
             _logger = logger;
-            _context = context;
         }
 
         [HttpGet("/books",Name = "GetBooks")]
