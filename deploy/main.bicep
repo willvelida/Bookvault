@@ -5,13 +5,13 @@ param location string = resourceGroup().location
 param applicationName string = uniqueString(resourceGroup().id)
 
 @description('The latest image that the inventory api is using')
-param inventoryApiImage string
+param inventoryApiImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
 @description('The latest image that the book api container is using')
-param bookApiImage string
+param bookApiImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
 @description('The latest image that the web container app is using')
-param bookVaultImage string
+param bookVaultImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
 var containerRegistryName = '${applicationName}acr'
 var logAnalyticsWorkspaceName = '${applicationName}law'
@@ -20,7 +20,6 @@ var containerAppEnvironmentName = '${applicationName}env'
 var cosmosDbAccountName = '${applicationName}db'
 var databaseName = 'BookVaultDB'
 var bookContainerName = 'Books'
-var apimInstanceName = '${applicationName}apim'
 var booksApiName = 'booksapi'
 var inventoryApiName = 'inventoryapi'
 var bookvaultWebName = 'bookvaultweb'
@@ -71,22 +70,6 @@ resource environment 'Microsoft.App/managedEnvironments@2022-03-01' = {
         sharedKey: logAnalytics.listKeys().primarySharedKey
       }
     }
-  }
-}
-
-resource apim 'Microsoft.ApiManagement/service@2021-12-01-preview' = {
-  name: apimInstanceName
-  location: location
-  sku: {
-    capacity: 1
-    name: 'Developer'
-  }
-  properties: {
-    publisherEmail: 'willvelida@microsoft.com'
-    publisherName: 'Will Velida'
-  }
-  identity: {
-    type: 'SystemAssigned'
   }
 }
 
@@ -156,11 +139,16 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: {
       activeRevisionsMode: 'multiple'
       secrets: [
+        {
+          name: 'container-registry-password'
+          value: containerRegistry.listCredentials().passwords[0].value
+        }
       ]
       registries: [
         {
           server: '${containerRegistry.name}.azurecr.io'
-          identity: 'system'
+          username: containerRegistry.listCredentials().username
+          passwordSecretRef: 'container-registry-password'
         }
       ]
       ingress: {
@@ -191,6 +179,19 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'COSMOS_DB_ENDPOINT'
               value: cosmosDbAccount.properties.documentEndpoint
+            }
+          ]
+          probes: [
+            {
+              type: 'Readiness'
+              tcpSocket: {
+                port: targetPort
+              }
+              successThreshold: 1
+              timeoutSeconds: 5
+              initialDelaySeconds: 3
+              periodSeconds: 5
+              failureThreshold: 48
             }
           ]
         }
@@ -224,11 +225,16 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: {
       activeRevisionsMode: 'multiple'
       secrets: [
+        {
+          name: 'container-registry-password'
+          value: containerRegistry.listCredentials().passwords[0].value
+        }
       ]
       registries: [
         {
           server: '${containerRegistry.name}.azurecr.io'
-          identity: 'system'
+          username: containerRegistry.listCredentials().username
+          passwordSecretRef: 'container-registry-password'
         }
       ]
       ingress: {
@@ -255,6 +261,17 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: appInsights.properties.ConnectionString
+            }
+          ]
+          probes: [
+            {
+              type: 'Liveness'
+              httpGet: {
+                port: targetPort
+                path: '/healthz' 
+              }
+              initialDelaySeconds: 7
+              periodSeconds: 3
             }
           ]
         }
@@ -288,11 +305,16 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: {
       activeRevisionsMode: 'multiple'
       secrets: [
+        {
+          name: 'container-registry-password'
+          value: containerRegistry.listCredentials().passwords[0].value
+        }
       ]
       registries: [
         {
           server: '${containerRegistry.name}.azurecr.io'
-          identity: 'system'
+          username: containerRegistry.listCredentials().username
+          passwordSecretRef: 'container-registry-password'
         }
       ]
       ingress: {
@@ -329,6 +351,17 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
               value: 'https://${inventoryApi.properties.configuration.ingress.fqdn}'
             }
           ]
+          probes: [
+            {
+              type: 'Startup'
+              httpGet: {
+                port: targetPort
+                path: '/startup' 
+              }
+              initialDelaySeconds: 3
+              periodSeconds: 3
+            }
+          ]
         }
       ]
       scale: {
@@ -349,40 +382,5 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
   }
   identity: {
     type: 'SystemAssigned'
-  }
-}
-
-module bookApiPullRole 'modules/acrPullRoleAssignment.bicep' = {
-  name: 'bookApiPullRole'
-  params: {
-    appId: bookApi.id
-    containerRegistryName: containerRegistry.name
-    principalId: bookApi.identity.principalId
-  }
-}
-
-module inventoryApiPullRole 'modules/acrPullRoleAssignment.bicep' = {
-  name: 'inventoryApiPullRole'
-  params: {
-    appId: inventoryApi.id
-    containerRegistryName: containerRegistry.name 
-    principalId: inventoryApi.identity.principalId
-  }
-}
-
-module bookvaultWebPullRole 'modules/acrPullRoleAssignment.bicep' = {
-  name: 'bookvaultWebPullRole'
-  params: {
-    appId: bookvaultWeb.id
-    containerRegistryName: containerRegistry.name 
-    principalId: bookvaultWeb.identity.principalId
-  }
-}
-
-module bookapiSqlRole 'modules/sqlRoleAssignment.bicep' = {
-  name: 'bookapiSqlRole'
-  params: {
-    cosmosDbAccountName: cosmosDbAccount.name 
-    principalId: bookApi.identity.principalId
   }
 }
