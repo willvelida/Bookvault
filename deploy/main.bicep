@@ -181,19 +181,6 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
               value: cosmosDbAccount.properties.documentEndpoint
             }
           ]
-          probes: [
-            {
-              type: 'Readiness'
-              tcpSocket: {
-                port: targetPort
-              }
-              successThreshold: 1
-              timeoutSeconds: 5
-              initialDelaySeconds: 3
-              periodSeconds: 5
-              failureThreshold: 5
-            }
-          ]
         }
       ]
       scale: {
@@ -261,17 +248,6 @@ resource inventoryApi 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: appInsights.properties.ConnectionString
-            }
-          ]
-          probes: [
-            {
-              type: 'Liveness'
-              httpGet: {
-                port: targetPort
-                path: '/healthz' 
-              }
-              initialDelaySeconds: 7
-              periodSeconds: 3
             }
           ]
         }
@@ -349,17 +325,6 @@ resource bookvaultWeb 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'InventoryApi'
               value: 'https://${inventoryApi.properties.configuration.ingress.fqdn}'
-            }
-          ]
-          probes: [
-            {
-              type: 'Startup'
-              httpGet: {
-                port: targetPort
-                path: '/startup' 
-              }
-              initialDelaySeconds: 3
-              periodSeconds: 3
             }
           ]
         }
