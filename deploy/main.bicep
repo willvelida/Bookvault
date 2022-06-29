@@ -191,7 +191,7 @@ resource bookApi 'Microsoft.App/containerApps@2022-03-01' = {
               timeoutSeconds: 5
               initialDelaySeconds: 3
               periodSeconds: 5
-              failureThreshold: 48
+              failureThreshold: 5
             }
           ]
         }
